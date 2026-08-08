@@ -1,0 +1,189 @@
+{
+  "name": "html-css",
+  "version": "1.0.0",
+  "description": "A template for HTML and CSS",
+  "main": "index.html",
+  "scripts": {
+    "start": "serve"
+  },
+  "keywords": [
+    "html",
+    "css"
+  ],
+  "author": "Ives van Hoorne",
+  "license": "MIT",
+  "devDependencies": {
+    "serve": "11.2.0"
+  }
+}
+
+const form = document.getElementById("mortgageForm");
+const clearBtn = document.getElementById("clearBtn");
+
+const amountInput = document.getElementById("amount");
+const termInput = document.getElementById("term");
+const rateInput = document.getElementById("rate");
+
+const mortgageTypes = document.querySelectorAll(
+  'input[name="mortgageType"]'
+);
+
+const emptyState = document.getElementById("emptyState");
+const resultCard = document.getElementById("resultCard");
+
+const monthlyPayment = document.getElementById("monthlyPayment");
+const totalPayment = document.getElementById("totalPayment");
+
+mortgageTypes.forEach((radio) => {
+
+  radio.addEventListener("change", () => {
+
+    document.querySelectorAll(".radio-option").forEach(option => {
+      option.classList.remove("selected");
+    });
+
+    radio.closest(".radio-option").classList.add("selected");
+
+  });
+
+});
+
+function showError(input, message) {
+
+  const formGroup = input.closest(".form-group");
+
+  const wrapper = formGroup.querySelector(".input-wrapper");
+
+  const error = formGroup.querySelector(".error");
+
+  if (wrapper) {
+    wrapper.classList.add("error-border");
+  }
+
+  if (error) {
+    error.textContent = message;
+    error.style.display = "block";
+  }
+
+}
+
+function clearError(input) {
+
+  const formGroup = input.closest(".form-group");
+
+  const wrapper = formGroup.querySelector(".input-wrapper");
+
+  const error = formGroup.querySelector(".error");
+
+  if (wrapper) {
+    wrapper.classList.remove("error-border");
+  }
+
+  if (error) {
+    error.textContent = "";
+    error.style.display = "none";
+  }
+
+}
+function validateForm() {
+
+  let valid = true;
+
+  clearError(amountInput);
+  clearError(termInput);
+  clearError(rateInput);
+
+  if (amountInput.value.trim() === "") {
+
+    showError(amountInput, "This field is required");
+
+    valid = false;
+
+  }
+
+  if (termInput.value.trim() === "") {
+
+    showError(termInput, "This field is required");
+
+    valid = false;
+
+  }
+
+  if (rateInput.value.trim() === "") {
+
+    showError(rateInput, "This field is required");
+
+    valid = false;
+
+  }
+
+  const mortgageSelected =
+    document.querySelector('input[name="mortgageType"]:checked');
+
+  const mortgageError =
+    document.querySelector(".radio-group")
+      .parentElement
+      .querySelector(".error");
+
+  if (!mortgageSelected) {
+
+    mortgageError.textContent = "Select a mortgage type";
+
+    mortgageError.style.display = "block";
+
+    valid = false;
+
+  } else {
+
+    mortgageError.textContent = "";
+
+    mortgageError.style.display = "none";
+
+  }
+
+  return valid;
+
+}
+
+clearBtn.addEventListener("click", () => {
+
+  form.reset();
+
+  clearError(amountInput);
+  clearError(termInput);
+  clearError(rateInput);
+
+  document.querySelectorAll(".radio-option").forEach(option => {
+    option.classList.remove("selected");
+  });
+
+  document.querySelectorAll(".error").forEach(error => {
+
+    error.textContent = "";
+
+    error.style.display = "none";
+
+  });
+
+  emptyState.classList.remove("hidden");
+
+  resultCard.classList.add("hidden");
+
+});
+
+
+function formatCurrency(value) {
+
+  return new Intl.NumberFormat("en-GB", {
+
+    style: "currency",
+
+    currency: "GBP",
+
+    minimumFractionDigits: 2,
+
+    maximumFractionDigits: 2
+
+  }).format(value);
+
+}
